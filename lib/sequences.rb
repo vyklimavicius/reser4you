@@ -73,7 +73,9 @@ end
   user_id = User.find_by(name: name).id
   details = Reservation.find_by(user_id: user_id)
   details.update(date: new_date)
-  puts "Thank you #{name} your reservation is changed for #{details.date}"
+  restaurant_id = Reservation.find_by(user_id: user_id).restaurant_id
+  restaurant_name = Restaurant.find_by(id: restaurant_id).name
+  puts "Thank you #{name} your reservation at #{restaurant_name} is changed for #{details.date}"
   puts "#################################################################"
  end
 
@@ -119,6 +121,7 @@ class Greeting < Sequence
  def menu
   answer = ""
   until answer == "Exit"
+  puts "\e[H\e[2J"
   progress
   welcome
   prompt = TTY::Prompt.new
