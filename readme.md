@@ -1,5 +1,5 @@
 
-                                *RESER4YOU*
+                                              *RESER4YOU*
 
 This app is made with the concept to create a cli for the user to be able to create , check, update and delete a reservation in it's prefer restaurant.
 
