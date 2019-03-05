@@ -48,7 +48,7 @@ end
   prompt = TTY::Prompt.new
   puts "---------------------------------"
   name = prompt.ask("what is your name? ", default: "Cap sensitive")
-  puts "##########################################"
+  puts "################################################################################"
   if !User.exists?(name: name)
     puts "There is no record of that User"
   else
@@ -69,21 +69,21 @@ end
   new_date = prompt.ask("Please type the new date", default: "MM/DD/YY - HOUR")
   # puts "---------------------------------"
   # phone = prompt.ask("What is your phone number? ")
-  puts "##########################################"
+  puts "#######################################################################################"
   user_id = User.find_by(name: name).id
   details = Reservation.find_by(user_id: user_id)
   details.update(date: new_date)
   restaurant_id = Reservation.find_by(user_id: user_id).restaurant_id
   restaurant_name = Restaurant.find_by(id: restaurant_id).name
   puts "Thank you #{name} your reservation at #{restaurant_name} is changed for #{details.date}"
-  puts "#################################################################"
+  puts "#######################################################################################"
  end
 
  def delete
     prompt = TTY::Prompt.new
     puts "---------------------------------"
     name = prompt.ask("what is your name? ", default: "Cap sensitive")
-    puts "##########################################"
+    puts "#############################################"
     user_id = User.find_by(name: name).id
     details = Reservation.find_by(user_id: user_id)
     details.destroy
@@ -122,7 +122,10 @@ class Greeting < Sequence
   answer = ""
   until answer == "Exit"
   puts "\e[H\e[2J"
+  puts "              Loading, please wait"
+  print "\a"
   progress
+  puts "\e[H\e[2J"
   welcome
   prompt = TTY::Prompt.new
   puts "------------------------"
@@ -148,7 +151,10 @@ class Greeting < Sequence
      puts "Press Enter to continue.."
      gets
    when "Exit"
+     puts "\e[H\e[2J"
      exit
+     puts "     \u00A9" + "By Vytautas Klimavicius"
+     puts ""
    end
   end
  end
