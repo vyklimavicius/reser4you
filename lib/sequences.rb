@@ -7,17 +7,25 @@ class Helpers
   puts "---------------------------------"
   name = prompt.ask("what is your name? ", default: "Cap sensitive")
   puts "---------------------------------"
-  phone = prompt.ask("What is your phone number? ", default: "6464646 Format")
-  puts "##########################################"
-  puts "Thank you #{name} and welcome to Reser4you!"
-  User.new(name: name, phone: phone).save
+  if User.exists?(name: name)
+    puts "Thank you #{name} and welcome back to Reser4you!"
+  else
+   phone = prompt.ask("What is your phone number? ", default: "6464646 Format")
+   puts "##########################################"
+   puts "Thank you #{name} and welcome to Reser4you!"
+   User.create(name: name, phone: phone)
+  end
+  name
  end
 
  def restaurant
   prompt = TTY::Prompt.new
   puts "---------------------------------"
   name = prompt.ask("what's the name of the restaurant? ", default: "Cap sensitive")
-  Restaurant.new(name: name).save
+  if !Restaurant.exists?(name: name)
+  Restaurant.create(name: name)
+  end
+  name
  end
 
  def reservation_date
@@ -32,66 +40,78 @@ end
 class Sequence < Helpers
 
 def create_reservation
-  user
-  restaurant
-  date = reservation_date
-  user_id = User.last.id
-  name = User.last.name
-  restaurant_id = Restaurant.last.id
-  restaurant_name = Restaurant.last.name
-  Reservation.new(user_id: user_id, restaurant_id: restaurant_id, date: date).save
-  puts "############################################################################"
-  puts "Thank you #{name} your reservation is set at #{restaurant_name} for #{date}"
+    name = user
+    rest_name = restaurant
+    date = reservation_date
+    user_info = User.find_by(name: name)
+    restaurant_id = Restaurant.find_by(name: rest_name).id
+    Reservation.create(user_id: user_info.id, restaurant_id: restaurant_id, date: date)
+    puts "################################################################################"
+    puts "Thank you #{user_info.name} your reservation is set at #{rest_name} for #{date}"
 end
 
- def reservation
-  prompt = TTY::Prompt.new
-  puts "---------------------------------"
-  name = prompt.ask("what is your name? ", default: "Cap sensitive")
-  puts "################################################################################"
+ def check_reservation
+   prompt = TTY::Prompt.new
+   puts "---------------------------------"
+   name = prompt.ask("what is your name? ", default: "Cap sensitive")
+   puts "#####################################################################################"
   if !User.exists?(name: name)
     puts "There is no record of that User"
+  elsif User.find_by(name: name).reservations.empty?
+    puts "There is no record of any reservation for that User"
   else
-  user_id = User.find_by(name: name).id
-  date = Reservation.find_by(user_id: user_id).date
-  restaurant_id = Reservation.find_by(user_id: user_id).restaurant_id
-  restaurant_name = Restaurant.find_by(id: restaurant_id).name
-  puts "Thank you #{name} your reservation at #{restaurant_name} is confirmed for #{date}"
-  puts "################################################################################"
+  user = User.find_by(name: name) # The instance of user
+  puts "Your reservation at #{user.reservations[0].restaurant.name} is confirmed for #{user.reservations[0].date}"
+  puts "######################################################################################"
   end
 
  end
 
  def update_reservation
-  prompt = TTY::Prompt.new
-  puts "---------------------------------"
-  name = prompt.ask("what is your name? ", default: "Cap sensitive")
-  new_date = prompt.ask("Please type the new date", default: "MM/DD/YY - HOUR")
-  # puts "---------------------------------"
-  # phone = prompt.ask("What is your phone number? ")
+  name = user
+  puts "#####################################################################################"
+  if !User.exists?(name: name)
+    puts "There is no record of that User"
+  else
+  date = reservation_date
+  user_info = User.find_by(name: name)
+  new_date = user_info.reservations[0].update(date: date)
+  puts "Thank you #{user_info.name} your reservation at #{user_info.reservations[0].restaurant.name} is changed for #{date}"
   puts "#######################################################################################"
-  user_id = User.find_by(name: name).id
-  details = Reservation.find_by(user_id: user_id)
-  details.update(date: new_date)
-  restaurant_id = Reservation.find_by(user_id: user_id).restaurant_id
-  restaurant_name = Restaurant.find_by(id: restaurant_id).name
-  puts "Thank you #{name} your reservation at #{restaurant_name} is changed for #{details.date}"
-  puts "#######################################################################################"
+ end
  end
 
  def delete
     prompt = TTY::Prompt.new
     puts "---------------------------------"
     name = prompt.ask("what is your name? ", default: "Cap sensitive")
+    puts "---------------------------------"
     puts "#############################################"
-    user_id = User.find_by(name: name).id
-    details = Reservation.find_by(user_id: user_id)
-    details.destroy
-    puts "Thank you #{name} your reservation is deleted."
- end
-
+    if !User.exists?(name: name)
+      puts "There is no record of that User"
+    else
+    user_info = User.find_by(name: name)
+    user_info.destroy
+    puts "The record is deleted"
+  end
 end
 
+def check
+  prompt = TTY::Prompt.new
+  puts "---------------------------------"
+  name = prompt.ask("what is your name? ", default: "Cap sensitive")
+  puts "---------------------------------"
+  puts "#############################################"
+  if !User.exists?(name: name)
+    puts "There is no record of that User"
+  else
+   user_info = User.find_by(name: name)
+   puts "This is the list of all your restaurants in your reservations"
+   puts user_info.restaurant[0].name 
+ end
+end
+
+end
 
 class Greeting < Sequence
 
@@ -106,6 +126,7 @@ class Greeting < Sequence
  def welcome
   puts "########################"
   puts "# Welcome to Reser4you #"
+  puts "####    v 0.0.0     ####"
   puts "########################"
  end
 
@@ -129,17 +150,15 @@ class Greeting < Sequence
   welcome
   prompt = TTY::Prompt.new
   puts "------------------------"
-  choices = "Create Reservation", "Check Reservation", "Update Reservation" , "Delete Reservation", "Exit"
+  choices = "Create Reservation", "Check Reservation", "Update Reservation" , "Delete Reservation", "Check all restaurants", "Exit"
   answer = prompt.enum_select("Select an editor?", choices)
   case answer
-   # when "Create a new User"
-   #   user
    when "Create Reservation"
      create_reservation
      puts "Press Enter to continue.."
      gets
    when "Check Reservation"
-     reservation
+     check_reservation
      puts "Press Enter to continue.."
      gets
    when "Update Reservation"
@@ -148,6 +167,10 @@ class Greeting < Sequence
      gets
    when "Delete Reservation"
      delete
+     puts "Press Enter to continue.."
+     gets
+   when "Check all restaurants"
+     check
      puts "Press Enter to continue.."
      gets
    when "Exit"

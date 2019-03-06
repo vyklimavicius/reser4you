@@ -10,8 +10,44 @@ require 'sinatra/activerecord/rake'
 task :console do
   require 'irb'
   ARGV.clear
-  IRB.start
+  Pry.start
 end
+
+desc 'Active Record Retrieving Objects cheat sheet'
+ task :cheat do
+   puts <<-CHEAT
+To retrieve objects from the database, Active Record provides several finder methods.
+Each finder method allows you to pass arguments into it to perform certain queries
+on your database without writing raw SQL.
+
+The methods are:
+
+    find
+    create_with
+    distinct
+    eager_load
+    extending
+    from
+    group
+    having
+    includes
+    joins
+    left_outer_joins
+    limit
+    lock
+    none
+    offset
+    order
+    preload
+    readonly
+    references
+    reorder
+    reverse_order
+    select
+    where
+CHEAT
+puts ""
+ end
 
 # desc 'Own migration process'
 #   task :db do

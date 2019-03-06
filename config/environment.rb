@@ -10,7 +10,7 @@ require_relative '../db/migrate/02_create_restaurants.rb'
 require_relative '../db/migrate/01_create_reservations.rb'
 require_relative '../lib/user.rb'
 require_relative '../lib/restaurant.rb'
-require_relative '../lib/reservations.rb'
+require_relative '../lib/reservation.rb'
 require_relative '../lib/sequences.rb'
 
 

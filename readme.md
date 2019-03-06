@@ -13,8 +13,8 @@ The relation is based on the reservation model, Restaurants has many reservation
 
 (Version 0.1)
 
-1. The User is able to Rate the Restaurant based on the current reservation.
-2. The User is able to delete itself from the DB.
+1. The User gets a more functional sequence(Interaction with DB).
+2. The user is able to rate the Restaurant based on the current reservation.
 3. The User gets a new attribute that stores it's food preference.
 4. The Restaurant gets a new attribute that stores cuisine.
 

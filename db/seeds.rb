@@ -1,6 +1,3 @@
-User.destroy_all
-Restaurant.destroy_all
-Reservation.destroy_all
 
 # Users
 
