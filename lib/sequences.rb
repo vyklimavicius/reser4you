@@ -107,7 +107,7 @@ def check
   else
    user_info = User.find_by(name: name)
    puts "This is the list of all your restaurants in your reservations"
-   puts user_info.restaurant[0].name 
+   user_info.restaurants.each {|res| puts " - #{res.name}"}
  end
 end
 
